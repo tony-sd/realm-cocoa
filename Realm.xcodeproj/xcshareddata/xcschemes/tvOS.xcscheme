@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "E856D1D4195614A300FB2FCF"
+               BlueprintIdentifier = "14CC26E91BD78B2900B72521"
                BuildableName = "Realm.framework"
-               BlueprintName = "iOS"
+               BlueprintName = "tvOS"
                ReferencedContainer = "container:Realm.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -28,7 +28,26 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "14CC26F21BD78B2A00B72521"
+               BuildableName = "tvOS Tests.xctest"
+               BlueprintName = "tvOS Tests"
+               ReferencedContainer = "container:Realm.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "14CC26E91BD78B2900B72521"
+            BuildableName = "Realm.framework"
+            BlueprintName = "tvOS"
+            ReferencedContainer = "container:Realm.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </TestAction>
@@ -45,9 +64,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "E856D1D4195614A300FB2FCF"
+            BlueprintIdentifier = "14CC26E91BD78B2900B72521"
             BuildableName = "Realm.framework"
-            BlueprintName = "iOS"
+            BlueprintName = "tvOS"
             ReferencedContainer = "container:Realm.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -63,9 +82,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "E856D1D4195614A300FB2FCF"
+            BlueprintIdentifier = "14CC26E91BD78B2900B72521"
             BuildableName = "Realm.framework"
-            BlueprintName = "iOS"
+            BlueprintName = "tvOS"
             ReferencedContainer = "container:Realm.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
