@@ -15,6 +15,11 @@ x.x.x Release notes (yyyy-MM-dd)
   now marked as `__attribute__((noescape))`/`@noescape`.
 * Many forms of queries with key paths on both sides of the comparison operator
   are now supported.
+* Swift: Added `Error` enum allowing to catch errors e.g. thrown on initializing
+  `RLMRealm`/`Realm` instances.
+* Fail with `RLMErrorFileNotFound` instead of the more generic `RLMErrorFileAccess`,
+  if no file was found when a realm was opened as read-only or if the directory part
+  of the specified path was not found when a copy should be written. 
 
 ### Bugfixes
 
