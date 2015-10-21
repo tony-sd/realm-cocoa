@@ -37,6 +37,11 @@
                BlueprintName = "tvOS Tests"
                ReferencedContainer = "container:Realm.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "EncryptionTests">
+               </Test>
+            </SkippedTests>
          </TestableReference>
       </Testables>
       <MacroExpansion>
