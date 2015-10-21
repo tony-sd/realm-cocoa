@@ -148,6 +148,7 @@
     config.path = RLMDefaultRealmPath();
     RLMRealmConfiguration.defaultConfiguration = config;
 
+#if !TARGET_OS_TV
     if (!RLMIsDebuggerAttached()) {
         config.encryptionKey = RLMGenerateKey();
         RLMRealmConfiguration.defaultConfiguration = config;
@@ -166,6 +167,7 @@
         RLMRealmConfiguration.defaultConfiguration = config;
         @autoreleasepool { XCTAssertThrows([RLMRealm defaultRealm]); }
     }
+#endif
 
     // Verify that the default realm's migration block is used implicitly
     // when needed
