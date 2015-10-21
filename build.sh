@@ -54,6 +54,8 @@ command:
   test-ios-devices:     tests ObjC & Swift iOS frameworks on all attached iOS devices
   test-ios-devices-objc:  tests ObjC iOS framework on all attached iOS devices
   test-ios-devices-swift: tests Swift iOS framework on all attached iOS devices
+  test-tvos:            tests tvOS framework
+  test-tvos-swift:      tests RealmSwift framework for tvOS
   test-osx:             tests OS X framework
   test-osx-swift:       tests RealmSwift OS X framework
   verify:               verifies docs, osx, osx-swift, ios-static, ios-dynamic, ios-swift, ios-device in both Debug and Release configurations
@@ -431,6 +433,8 @@ case "$COMMAND" in
         sh build.sh ios-swift
         sh build.sh watchos
         sh build.sh watchos-swift
+        sh build.sh tvos
+        sh build.sh tvos-swift
         sh build.sh osx
         sh build.sh osx-swift
         exit 0
@@ -498,6 +502,8 @@ case "$COMMAND" in
         sh build.sh test-ios-dynamic || failed=1
         sh build.sh test-ios-swift || failed=1
         sh build.sh test-ios-devices || failed=1
+        sh build.sh test-tvos || failed=1
+        sh build.sh test-tvos-swift || failed=1
         sh build.sh test-osx || failed=1
         sh build.sh test-osx-swift || failed=1
         exit $failed
@@ -555,6 +561,16 @@ case "$COMMAND" in
     "test-ios-devices-swift")
         test_ios_devices xcrealmswift "RealmSwift" "$CONFIGURATION"
         exit $?
+        ;;
+
+    "test-tvos")
+        xcrealm "-scheme tvOS -configuration $CONFIGURATION -sdk appletvsimulator -destination 'name=Apple TV 1080p,OS=9.0' build test"
+        exit 0
+        ;;
+
+    "test-tvos-swift")
+        xcrealmswift "-scheme RealmSwift -configuration $CONFIGURATION -sdk appletvsimulator -destination 'name=Apple TV 1080p,OS=9.0' build test"
+        exit 0
         ;;
 
     "test-osx")
