@@ -271,6 +271,8 @@ class SwiftObjectInterfaceTests: RLMTestCase {
     func testNSStringFromClassDemangledTopLevelClassNames() {
 #if os(iOS)
         XCTAssertEqual(NSStringFromClass(OuterClass), "iOS_Tests.OuterClass")
+#elseif os(tvOS)
+        XCTAssertEqual(NSStringFromClass(OuterClass), "tvOS_Tests.OuterClass")
 #else
         XCTAssertEqual(NSStringFromClass(OuterClass), "OSX_Tests.OuterClass")
 #endif
@@ -281,6 +283,8 @@ class SwiftObjectInterfaceTests: RLMTestCase {
     func testNestedClassNameMangling() {
 #if os(iOS)
         XCTAssertEqual(NSStringFromClass(OuterClass.InnerClass.self), "_TtCC9iOS_Tests10OuterClass10InnerClass")
+#elseif os(tvOS)
+        XCTAssertEqual(NSStringFromClass(OuterClass.InnerClass.self), "_TtCC10tvOS_Tests10OuterClass10InnerClass")
 #else
         XCTAssertEqual(NSStringFromClass(OuterClass.InnerClass.self), "_TtCC9OSX_Tests10OuterClass10InnerClass")
 #endif
