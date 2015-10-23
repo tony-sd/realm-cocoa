@@ -146,7 +146,11 @@ SharedRealm Realm::get_shared_realm(Config config)
         realm->m_notifier->add_realm(realm.get());
     }
     else {
-        realm->m_notifier = std::make_shared<ExternalCommitHelper>(realm.get());
+#if TARGET_OS_TV
+        realm->m_notifier = std::make_shared<InterThreadNotifier>(realm.get());
+#else
+        realm->m_notifier = std::make_shared<InterProccessNotifier>(realm.get());
+#endif
 
         // otherwise get the schema from the group
         realm->m_config.schema = std::make_unique<Schema>(ObjectStore::schema_from_group(realm->read_group()));
