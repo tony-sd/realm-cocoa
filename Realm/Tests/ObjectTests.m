@@ -1809,4 +1809,47 @@ RLM_ARRAY_TYPE(PrimaryEmployeeObject);
     }];
 }
 
+- (void)testMultipleIntObjects {
+    IntObject *objectA = [[IntObject alloc] init];
+    objectA.intCol = 1;
+
+    IntObject *objectB = [[IntObject alloc] init];
+    objectB.intCol = 1;
+
+    IntObject *objectC = [[IntObject alloc] init];
+    objectC.intCol = 1;
+
+    RLMRealm *realm = RLMRealm.defaultRealm;
+    [realm transactionWithBlock:^{
+        [realm addObject:objectA];
+        [IntObject createInRealm:realm withValue:@[@2]];
+        [IntObject createInRealm:realm withValue:@[@3]];
+        [IntObject createInRealm:realm withValue:@[@4]];
+        [IntObject createInRealm:realm withValue:@[@5]];
+        [IntObject createInRealm:realm withValue:@[@6]];
+        [IntObject createInRealm:realm withValue:@[@7]];
+        [IntObject createInRealm:realm withValue:@[@8]];
+        [IntObject createInRealm:realm withValue:@[@9]];
+        [IntObject createInRealm:realm withValue:@[@10]];
+        [IntObject createInRealm:realm withValue:@[@11]];
+        [IntObject createInRealm:realm withValue:@[@12]];
+        [IntObject createInRealm:realm withValue:@[@13]];
+        [realm addObject:objectB];
+        [realm addObject:objectC];
+        [IntObject createInRealm:realm withValue:@[@2]];
+        [IntObject createInRealm:realm withValue:@[@3]];
+        [IntObject createInRealm:realm withValue:@[@4]];
+    }];
+
+    RLMResults *results = [IntObject objectsWhere:@"intCol > %@", @1];
+    XCTAssertEqual(NSNotFound, [results indexOfObject:objectA]);
+    XCTAssertEqual(NSNotFound, [results indexOfObject:objectB]);
+    XCTAssertEqual(NSNotFound, [results indexOfObject:objectC]);
+    for (IntObject *obj in results) {
+        XCTAssertFalse([obj isEqualToObject:objectB], @"objectB shouldn't be included in the results.");
+    }
+    XCTAssertEqual(15U, [results count]);
+}
+
+
 @end
