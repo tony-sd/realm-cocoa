@@ -19,7 +19,7 @@
 
 @end
 
-@implementation ViewController
+@implementation RepositoriesViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -73,7 +73,7 @@
         if (!error) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 UIImage *image = [UIImage imageWithData:data];
-                cell.imageView.image = image;
+                cell.avatarImageView.image = image;
             });
         } else {
             NSLog(@"%@", error);
