@@ -49,7 +49,10 @@
 		02AFB4671A80343600E11938 /* ResultsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 02AFB4621A80343600E11938 /* ResultsTests.m */; };
 		02AFB4681A80343600E11938 /* ResultsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 02AFB4621A80343600E11938 /* ResultsTests.m */; };
 		02E334C31A5F41C7009F8810 /* DynamicTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E81A1FBA1955FE0100FDED82 /* DynamicTests.m */; };
+		2973CCF91C175AB400FEA0FA /* fileformat-pre-null.realm in Resources */ = {isa = PBXBuildFile; fileRef = 29B7FDF71C0DE76B0023224E /* fileformat-pre-null.realm */; };
 		29B7FDF61C0DA6560023224E /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29B7FDF51C0DA6560023224E /* Error.swift */; };
+		29B7FDFB1C0DE8100023224E /* fileformat-pre-null.realm in Resources */ = {isa = PBXBuildFile; fileRef = 29B7FDF71C0DE76B0023224E /* fileformat-pre-null.realm */; };
+		29B7FDFC1C0DE8110023224E /* fileformat-pre-null.realm in Resources */ = {isa = PBXBuildFile; fileRef = 29B7FDF71C0DE76B0023224E /* fileformat-pre-null.realm */; };
 		29EDB8E41A7708E700458D80 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E8839B2D19E31FD90047B1A8 /* main.m */; };
 		3F1F47821B9612B300CD99A3 /* KVOTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3F0F029D1B6FFE610046A4D5 /* KVOTests.mm */; };
 		3F1F47831B9656B900CD99A3 /* KVOTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3F0F029D1B6FFE610046A4D5 /* KVOTests.mm */; };
@@ -368,6 +371,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		29B7FDF81C0DE7E20023224E /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 7;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5D128F291BE984D4001F4FBF /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -422,6 +434,7 @@
 		02E334C41A5F4923009F8810 /* RLMRealm_Private.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RLMRealm_Private.hpp; sourceTree = "<group>"; };
 		26F3CA681986CC86004623E1 /* SwiftPropertyTypeTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftPropertyTypeTest.swift; sourceTree = "<group>"; };
 		29B7FDF51C0DA6560023224E /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
+		29B7FDF71C0DE76B0023224E /* fileformat-pre-null.realm */ = {isa = PBXFileReference; lastKnownFileType = file; path = "fileformat-pre-null.realm"; sourceTree = "<group>"; };
 		29EDB8D71A7703C500458D80 /* RLMObjectStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RLMObjectStore.h; sourceTree = "<group>"; };
 		29EDB8E01A77070200458D80 /* RLMRealm_Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RLMRealm_Private.h; sourceTree = "<group>"; };
 		29EDB8E51A7710B700458D80 /* RLMResults_Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RLMResults_Private.h; sourceTree = "<group>"; };
@@ -974,6 +987,7 @@
 			isa = PBXGroup;
 			children = (
 				E81A1FC21955FE0100FDED82 /* RealmTests-Info.plist */,
+				29B7FDF71C0DE76B0023224E /* fileformat-pre-null.realm */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -1159,6 +1173,7 @@
 				5D660FD41BE98C7C0021E04F /* Sources */,
 				5D660FD51BE98C7C0021E04F /* Frameworks */,
 				5D66102D1BE98E360021E04F /* Embed Frameworks */,
+				2973CCF81C175AAA00FEA0FA /* Resources */,
 			);
 			buildRules = (
 			);
@@ -1197,6 +1212,7 @@
 				E856D1DB195614A400FB2FCF /* Sources */,
 				E856D1DC195614A400FB2FCF /* Frameworks */,
 				5D61570B1BE3250000A4BD3F /* Exit After Building Tests If Requested */,
+				29B7FDF91C0DE7FC0023224E /* Resources */,
 			);
 			buildRules = (
 			);
@@ -1218,6 +1234,8 @@
 				E8D89BA01955FC6D00CF2B9A /* Frameworks */,
 				5D128F291BE984D4001F4FBF /* Embed Frameworks */,
 				5D61570A1BE324A300A4BD3F /* Exit After Building Tests If Requested */,
+				29B7FDF81C0DE7E20023224E /* CopyFiles */,
+				29B7FDFA1C0DE80A0023224E /* Resources */,
 			);
 			buildRules = (
 			);
@@ -1294,6 +1312,30 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		2973CCF81C175AAA00FEA0FA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2973CCF91C175AB400FEA0FA /* fileformat-pre-null.realm in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		29B7FDF91C0DE7FC0023224E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				29B7FDFC1C0DE8110023224E /* fileformat-pre-null.realm in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		29B7FDFA1C0DE80A0023224E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				29B7FDFB1C0DE8100023224E /* fileformat-pre-null.realm in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5D659ECE1BE04556006515A0 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
