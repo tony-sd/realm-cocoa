@@ -119,7 +119,7 @@ extern "C" {
 }
 
 - (void)testReadOnlyRealmMustExist {
-   RLMAssertThrowsWithCodeMatching([self readOnlyRealmWithPath:RLMTestRealmPath() error:nil], RLMErrorFileAccess);
+   RLMAssertThrowsWithCodeMatching([self readOnlyRealmWithPath:RLMTestRealmPath() error:nil], RLMErrorFileNotFound);
 }
 
 - (void)testCannotHaveReadOnlyAndReadWriteRealmsAtSamePathAtSameTime {
