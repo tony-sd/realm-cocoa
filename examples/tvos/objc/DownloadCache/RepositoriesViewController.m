@@ -26,13 +26,27 @@
 @property (nonatomic, weak) IBOutlet UITextField *searchField;
 
 @property (nonatomic) RLMResults *results;
+@property (nonatomic) RLMNotificationToken *notificationToken;
 
 @end
 
 @implementation RepositoriesViewController
 
+- (void)dealloc {
+    if (self.notificationToken) {
+        RLMRealm *realm = [RLMRealm defaultRealm];
+        [realm removeNotification:self.notificationToken];
+    }
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
+
+    __weak typeof(self) weakSelf = self;
+    RLMRealm *realm = [RLMRealm defaultRealm];
+    self.notificationToken = [realm addNotificationBlock:^(NSString * _Nonnull notification, RLMRealm * _Nonnull realm) {
+        [weakSelf reloadData];
+    }];
 
     NSURLComponents *components = [NSURLComponents componentsWithString:@"https://api.github.com/search/repositories"];
     components.queryItems = @[[NSURLQueryItem queryItemWithName:@"q" value:@"language:objc"],
@@ -56,9 +70,6 @@
                         [realm addOrUpdateObject:repository];
                     }
                 }];
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self reloadData];
-                });
             } else {
                 NSLog(@"%@", jsonError);
             }

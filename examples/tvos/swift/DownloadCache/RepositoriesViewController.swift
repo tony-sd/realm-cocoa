@@ -23,10 +23,24 @@ class RepositoriesViewController: UICollectionViewController, UITextFieldDelegat
     @IBOutlet weak var sortOrderControl: UISegmentedControl!
     @IBOutlet weak var searchField: UITextField!
 
+    var notificationToken: NotificationToken?
+
     var results: Results<Repository>?
+
+    deinit {
+        if let notificationToken = notificationToken {
+            let realm = try! Realm()
+            realm.removeNotification(notificationToken)
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        let realm = try! Realm()
+        notificationToken = realm.addNotificationBlock { [weak self] notification, realm in
+            self?.reloadData()
+        }
 
         let components = NSURLComponents(string: "https://api.github.com/search/repositories")!
         components.queryItems = [
@@ -53,10 +67,6 @@ class RepositoriesViewController: UICollectionViewController, UITextFieldDelegat
                         repository.avatarURL = item["owner"]!["avatar_url"] as? String;
 
                         realm.add(repository, update: true)
-                    }
-
-                    dispatch_async(dispatch_get_main_queue()) {
-                        self.reloadData()
                     }
                 }
 
