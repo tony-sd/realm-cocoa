@@ -566,6 +566,7 @@ private:
     if (!RLMIsInRunLoop()) {
         @throw RLMException(@"Can only add notification blocks from within runloops.");
     }
+    [_realm verifyThread];
 
     auto token = _results.async(std::make_unique<RunloopCallback>(self, block));
     return [[RLMCancellationToken alloc] initWithToken:std::move(token)];
@@ -573,6 +574,7 @@ private:
 
 - (RLMCancellationToken *)deliverOn:(dispatch_queue_t)queue
                               block:(void (^)(RLMResults *, NSError *))block {
+    [_realm verifyThread];
     auto token = _results.async(std::make_unique<QueueCallback>(block, queue,
                                                                self.objectClassName,
                                                                _realm.configuration));
