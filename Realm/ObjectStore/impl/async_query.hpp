@@ -31,8 +31,10 @@ class AsyncQuery : public std::enable_shared_from_this<AsyncQuery> {
 public:
     AsyncQuery(SortOrder sort,
                std::unique_ptr<SharedGroup::Handover<Query>> handover,
-               std::unique_ptr<AsyncQueryCallback> callback,
                RealmCoordinator& parent);
+
+    void add_callback(std::unique_ptr<AsyncQueryCallback>);
+    bool remove_callback(AsyncQueryCallback& callback);
 
     void get_results(const SharedRealm& realm, SharedGroup& sg, std::vector<std::function<void()>>& ret);
 
@@ -44,7 +46,7 @@ public:
     void prepare_handover();
 
     // Get the version of the current handover object
-    SharedGroup::VersionID version() const noexcept;
+    SharedGroup::VersionID version() const noexcept { return m_version; }
 
     void attach_to(SharedGroup& sg);
     void detatch();
@@ -57,10 +59,19 @@ private:
     std::unique_ptr<SharedGroup::Handover<Query>> m_query_handover;
     std::unique_ptr<Query> m_query;
 
-    std::unique_ptr<SharedGroup::Handover<TableView>> m_tv_handover;
     TableView m_tv;
 
-    const std::unique_ptr<AsyncQueryCallback> m_callback;
+    // FIXME: use
+    struct CallbackInfo {
+        std::unique_ptr<AsyncQueryCallback> callback;
+        std::unique_ptr<SharedGroup::Handover<TableView>> tv;
+        bool has_delivered_first = false;
+        bool has_delivered_error = false;
+    };
+    std::vector<std::unique_ptr<AsyncQueryCallback>> m_callbacks;
+    std::vector<> m_tv_handover;
+
+    SharedGroup::VersionID  m_version;
 
     SharedGroup* m_sg = nullptr;
 

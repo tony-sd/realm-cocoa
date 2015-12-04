@@ -350,28 +350,30 @@ Results::UnsupportedColumnTypeException::UnsupportedColumnTypeException(size_t c
 
 AsyncQueryCancelationToken Results::async(std::unique_ptr<AsyncQueryCallback> target)
 {
-    return _impl::RealmCoordinator::register_query(*this, std::move(target));
+    return _impl::RealmCoordinator::register_query(*this, std::move(target), m_query_runner);
 }
 
 AsyncQueryCancelationToken::~AsyncQueryCancelationToken()
 {
-    if (m_registration) {
-        _impl::RealmCoordinator::unregister_query(*m_registration);
+    if (m_query) {
+        _impl::RealmCoordinator::unregister_query(*m_query, *m_callback);
     }
 }
 
 AsyncQueryCancelationToken::AsyncQueryCancelationToken(AsyncQueryCancelationToken&& rgt)
-: m_registration(std::move(rgt.m_registration))
+: m_query(std::move(rgt.m_query))
+, m_callback(rgt.m_callback)
 {
 }
 
 AsyncQueryCancelationToken& AsyncQueryCancelationToken::operator=(realm::AsyncQueryCancelationToken&& rgt)
 {
     if (this != &rgt) {
-        if (m_registration) {
-            _impl::RealmCoordinator::unregister_query(*m_registration);
+        if (m_query) {
+            _impl::RealmCoordinator::unregister_query(*m_query, *m_callback);
         }
-        m_registration = std::move(rgt.m_registration);
+        m_query = std::move(rgt.m_query);
+        m_callback = rgt.m_callback;
     }
     return *this;
 }

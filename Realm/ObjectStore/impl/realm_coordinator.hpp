@@ -74,8 +74,10 @@ public:
     // Called by m_notifier when there's a new commit to send notifications for
     void on_change();
 
-    static AsyncQueryCancelationToken register_query(const Results& r, std::unique_ptr<AsyncQueryCallback>);
-    static void unregister_query(AsyncQuery& registration);
+    static AsyncQueryCancelationToken register_query(const Results& r,
+                                                     std::unique_ptr<AsyncQueryCallback>,
+                                                     std::weak_ptr<AsyncQuery>&);
+    static void unregister_query(AsyncQuery& registration, AsyncQueryCallback& callback);
 
     // Advance the Realm to the most recent transaction version which all async
     // work is complete for
@@ -107,8 +109,10 @@ private:
 
     std::unique_ptr<_impl::ExternalCommitHelper> m_notifier;
 
-    AsyncQueryCancelationToken do_register_query(const Results& r, std::unique_ptr<AsyncQueryCallback>);
-    void do_unregister_query(AsyncQuery& registration);
+    AsyncQueryCancelationToken do_register_query(const Results& r,
+                                                 std::unique_ptr<AsyncQueryCallback>,
+                                                 std::weak_ptr<AsyncQuery>&);
+    void do_unregister_query(AsyncQuery& registration, AsyncQueryCallback& callback);
 
     // must be called with m_query_mutex locked
     void pin_version(uint_fast64_t version, uint_fast32_t index);

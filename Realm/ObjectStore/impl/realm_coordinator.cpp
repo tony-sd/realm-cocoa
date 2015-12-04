@@ -224,13 +224,15 @@ void RealmCoordinator::pin_version(uint_fast64_t version, uint_fast32_t index)
 }
 
 AsyncQueryCancelationToken RealmCoordinator::register_query(const Results& r,
-                                                            std::unique_ptr<AsyncQueryCallback> target)
+                                                            std::unique_ptr<AsyncQueryCallback> target,
+                                                            std::weak_ptr<AsyncQuery>& query)
 {
-    return r.get_realm().m_coordinator->do_register_query(r, std::move(target));
+    return r.get_realm().m_coordinator->do_register_query(r, std::move(target), query);
 }
 
 AsyncQueryCancelationToken RealmCoordinator::do_register_query(const Results& r,
-                                                               std::unique_ptr<AsyncQueryCallback> target)
+                                                               std::unique_ptr<AsyncQueryCallback> target,
+                                                               std::weak_ptr<AsyncQuery>& weak_query)
 {
     if (m_config.read_only) {
         throw InvalidTransactionException("Cannot create asynchronous query for read-only Realms");
@@ -241,28 +243,36 @@ AsyncQueryCancelationToken RealmCoordinator::do_register_query(const Results& r,
 
     auto handover = r.get_realm().m_shared_group->export_for_handover(r.get_query(), ConstSourcePayload::Copy);
     auto version = handover->version;
-    auto query = std::make_shared<AsyncQuery>(r.get_sort(),
-                                              std::move(handover),
-                                              std::move(target),
-                                              *this);
 
+    bool is_new = false;
+    auto query = weak_query.lock();
+    if (!query) {
+        query = std::make_shared<AsyncQuery>(r.get_sort(), std::move(handover), *this);
+        is_new = true;
+    }
+
+    auto callback = target.get();
     {
         std::lock_guard<std::mutex> lock(m_query_mutex);
+
+        query->add_callback(std::move(target));
         pin_version(version.version, version.index);
-        m_new_queries.push_back(query);
+        if (is_new) {
+            m_new_queries.push_back(query);
+        }
     }
 
     // Wake up the background worker threads by pretending we made a commit
     m_notifier->notify_others();
-    return query;
+    return {query, callback};
 }
 
-void RealmCoordinator::unregister_query(AsyncQuery& registration)
+void RealmCoordinator::unregister_query(AsyncQuery& registration, AsyncQueryCallback& callback)
 {
-    registration.parent->do_unregister_query(registration);
+    registration.parent->do_unregister_query(registration, callback);
 }
 
-void RealmCoordinator::do_unregister_query(AsyncQuery& registration)
+void RealmCoordinator::do_unregister_query(AsyncQuery& registration, AsyncQueryCallback& callback)
 {
     auto swap_remove = [&](auto& container) {
         auto it = std::find_if(container.begin(), container.end(),
@@ -276,6 +286,11 @@ void RealmCoordinator::do_unregister_query(AsyncQuery& registration)
     };
 
     std::lock_guard<std::mutex> lock(m_query_mutex);
+    if (registration.remove_callback(callback)) {
+        // query still has more callbacks, so don't remove it from the list
+        return;
+    }
+
     if (swap_remove(m_queries)) {
         // Make sure we aren't holding on to read versions needlessly if there
         // are no queries left, but don't close them entirely as opening shared
