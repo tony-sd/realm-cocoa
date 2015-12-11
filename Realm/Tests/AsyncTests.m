@@ -19,6 +19,8 @@
 #import "RLMTestCase.h"
 
 #import "RLMRealmConfiguration_Private.h"
+#import <pthread.h>
+#import <libkern/OSAtomic.h>
 
 #pragma clang diagnostic ignored "-Wunused-parameter"
 
@@ -703,6 +705,139 @@
     [token1 stop];
     [token2 stop];
 }
+
+- (void)testBlockedThreadWithNotificationsDoesNotPreventDeliveryOnOtherThreads {
+    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+    dispatch_semaphore_t sema2 = dispatch_semaphore_create(0);
+    [self dispatchAsync:^{
+        // Add a notification block on a background thread, run the runloop
+        // until the initial results are ready, and then block the thread without
+        // running the runloop until the main thread is done testing things
+        __block id token;
+        CFRunLoopPerformBlock(CFRunLoopGetCurrent(), kCFRunLoopDefaultMode, ^{
+            token = [IntObject.allObjects addNotificationBlock:^(RLMResults *results, NSError *error) {
+                dispatch_semaphore_signal(sema);
+                CFRunLoopStop(CFRunLoopGetCurrent());
+                dispatch_semaphore_wait(sema2, DISPATCH_TIME_FOREVER);
+            }];
+        });
+        CFRunLoopRun();
+        [token stop];
+    }];
+    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+
+    __block int calls = 0;
+    id token = [self subscribeAndWaitForInitial:IntObject.allObjects block:^(RLMResults *results) {
+        ++calls;
+    }];
+    XCTAssertEqual(calls, 0);
+
+    [self waitForNotification:RLMRealmDidChangeNotification realm:RLMRealm.defaultRealm block:^{
+        [self createObject:0];
+    }];
+    XCTAssertEqual(calls, 1);
+
+    [token stop];
+    dispatch_semaphore_signal(sema2);
+}
+
+- (void)testAddNotificationBlockFromWrongThread {
+    RLMResults *results = [IntObject allObjects];
+    [self dispatchAsyncAndWait:^{
+        CFRunLoopPerformBlock(CFRunLoopGetCurrent(), kCFRunLoopDefaultMode, ^{
+            XCTAssertThrows([results addNotificationBlock:^(RLMResults *results, NSError *error) {
+                XCTFail(@"should not be called");
+            }]);
+            CFRunLoopStop(CFRunLoopGetCurrent());
+        });
+        CFRunLoopRun();
+    }];
+}
+
+- (void)testRemoveNotificationBlockFromWrongThread {
+    // Unlike adding this is allowed, because it can happen due to capturing
+    // tokens in blocks and users are very confused by errors from deallocation
+    // on the wrong thread
+    RLMResults *results = [IntObject allObjects];
+    id token = [results addNotificationBlock:^(RLMResults *results, NSError *error) {
+        XCTFail(@"should not be called");
+    }];
+    [self dispatchAsyncAndWait:^{
+        [token stop];
+    }];
+}
+
+#if 0
+- (void)testABunchOfQueriesOnABunchOfThreads {
+    volatile int32_t c1 = 0;
+    __block volatile int32_t *c2 = &c1;
+    void (^doStuff)() = ^{
+        __block int calls = 0;
+        __block NSMutableSet *waiting = [NSMutableSet new];
+        void (^block)(RLMResults *, NSError *) = ^(RLMResults *results, NSError * error) {
+            OSAtomicIncrement32(c2);
+            [waiting removeObject:results];
+            if (waiting.count == 0) {
+                CFRunLoopStop(CFRunLoopGetCurrent());
+            }
+            OSAtomicDecrement32(c2);
+        };
+
+        RLMResults *results[5];
+        id tokens[10];
+
+        // Create five queries with notifications and wait for initial results
+        for (int i = 0; i < 5; ++i) {
+            results[i] = [IntObject allObjects];
+            tokens[i] = [results[i] addNotificationBlock:block];
+            [waiting addObject:results[i]];
+        }
+        CFRunLoopRun();
+        XCTAssertGreaterThanOrEqual(calls, 5);
+
+        // Add another block to each query, wait for them
+        for (int i = 5; i < 10; ++i) {
+            tokens[i] = [results[i - 5] addNotificationBlock:block];
+            [waiting addObject:results[i - 5]];
+        }
+        CFRunLoopRun();
+        XCTAssertGreaterThanOrEqual(calls, 10);
+
+        // We're done adding queries so we no longer need to track which ones
+        // exactly have been notified, as they're all notified in one runloop
+        // task
+        waiting = nil;
+
+        for (int i = 0; i < 10; ++i) {
+            [self createObject:i];
+
+            // Remove a random token
+            int idx = arc4random_uniform(10 - i) + i;
+            [tokens[idx] stop];
+            tokens[idx] = tokens[i];
+
+            // Wait for all remaining ones to get a notification
+            if (i < 9) {
+                CFRunLoopRun();
+            }
+        }
+    };
+
+    dispatch_group_t group = dispatch_group_create();
+    for (int i = 0; i < 100; ++i) {
+        dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            CFRunLoopPerformBlock(CFRunLoopGetCurrent(), kCFRunLoopDefaultMode, ^{
+                @autoreleasepool {
+                    doStuff();
+                    CFRunLoopStop(CFRunLoopGetCurrent());
+                }
+            });
+            CFRunLoopRun();
+        });
+    }
+    dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+}
+#endif
 
 - (void)testAsyncNotSupportedForReadOnlyRealms {
     @autoreleasepool { [RLMRealm defaultRealm]; }
