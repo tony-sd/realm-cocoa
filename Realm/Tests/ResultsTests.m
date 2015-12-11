@@ -241,6 +241,11 @@
 
     [realm commitWriteTransaction];
 
+    // COUNT ::::::::::::::::::::::::::::::::::::::::::::::
+    XCTAssertEqual([[noArray valueForKeyPath:@"@count"] integerValue], 4);
+    XCTAssertEqual([[yesArray valueForKeyPath:@"@count"] integerValue], 6);
+    XCTAssertEqual([[allArray valueForKeyPath:@"@count"] integerValue], 10);
+
     // SUM ::::::::::::::::::::::::::::::::::::::::::::::
     // Test int sum
     XCTAssertEqual([noArray sumOfProperty:@"intCol"].integerValue, 4);
