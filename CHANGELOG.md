@@ -15,6 +15,8 @@ x.x.x Release notes (yyyy-MM-dd)
   now marked as `__attribute__((noescape))`/`@noescape`.
 * Many forms of queries with key paths on both sides of the comparison operator
   are now supported.
+* Fail instead dead-lock in `+[RLMRealm sharedSchema]`, if a Swift property is initialized
+  to a computed value, which attempts to open a Realm on its own.
 
 ### Bugfixes
 
