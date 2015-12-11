@@ -343,6 +343,36 @@ static inline void RLMResultsValidateInWriteTransaction(__unsafe_unretained RLMR
     return [self _aggregateForKeyPath:keyPath method:&Results::average methodName:@"@avg"];
 }
 
+- (NSArray *)_unionOfObjectsForKeyPath:(NSString *)keyPath {
+    assertKeyPathIsNotNested(keyPath);
+    return translateErrors([&] {
+        return RLMCollectionValueForKey(self, keyPath);
+    });
+}
+
+- (NSArray *)_distinctUnionOfObjectsForKeyPath:(__unused NSString *)keyPath {
+    return [NSSet setWithArray:[self _unionOfObjectsForKeyPath:keyPath]].allObjects;
+}
+
+- (NSArray *)_unionOfArraysForKeyPath:(NSString *)keyPath {
+    assertKeyPathIsNotNested(keyPath);
+    NSAssert(![keyPath isEqualToString:@"self"], @"self is not a valid key-path for a KVC array collection operator as 'unionOfArrays'.");
+
+    return translateErrors([&] {
+        NSArray *nestedResults = RLMCollectionValueForKey(self, keyPath);
+        NSMutableArray *flatArray = [NSMutableArray arrayWithCapacity:nestedResults.count];
+        for (id<RLMFastEnumerable> array in nestedResults) {
+            NSArray *nsArray = RLMCollectionValueForKey(array, @"self");
+            [flatArray addObjectsFromArray:nsArray];
+        }
+        return flatArray;
+    });
+}
+
+- (NSArray *)_distinctUnionOfArraysForKeyPath:(__unused NSString *)keyPath {
+    return [NSSet setWithArray:[self _unionOfArraysForKeyPath:keyPath]].allObjects;
+}
+
 - (RLMResults *)objectsWhere:(NSString *)predicateFormat, ... {
     va_list args;
     RLM_VARARG(predicateFormat, args);
