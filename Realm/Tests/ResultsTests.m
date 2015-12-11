@@ -251,16 +251,19 @@
     XCTAssertEqual([noArray sumOfProperty:@"intCol"].integerValue, 4);
     XCTAssertEqual([yesArray sumOfProperty:@"intCol"].integerValue, 0);
     XCTAssertEqual([allArray sumOfProperty:@"intCol"].integerValue, 4);
+    XCTAssertEqual([[allArray valueForKeyPath:@"@sum.intCol"] integerValue], 4);
 
     // Test float sum
     XCTAssertEqualWithAccuracy([noArray sumOfProperty:@"floatCol"].floatValue, 0.0f, 0.1f);
     XCTAssertEqualWithAccuracy([yesArray sumOfProperty:@"floatCol"].floatValue, 7.2f, 0.1f);
     XCTAssertEqualWithAccuracy([allArray sumOfProperty:@"floatCol"].floatValue, 7.2f, 0.1f);
+    XCTAssertEqualWithAccuracy([[allArray valueForKeyPath:@"@sum.floatCol"] floatValue], 7.2f, 0.1f);
 
     // Test double sum
     XCTAssertEqualWithAccuracy([noArray sumOfProperty:@"doubleCol"].doubleValue, 10.0, 0.1f);
     XCTAssertEqualWithAccuracy([yesArray sumOfProperty:@"doubleCol"].doubleValue, 0.0, 0.1f);
     XCTAssertEqualWithAccuracy([allArray sumOfProperty:@"doubleCol"].doubleValue, 10.0, 0.1f);
+    XCTAssertEqualWithAccuracy([[allArray valueForKeyPath:@"@sum.doubleCol"] doubleValue], 10.0, 0.1f);
 
     // Test invalid column name
     RLMAssertThrowsWithReasonMatching([yesArray sumOfProperty:@"foo"], @"foo.*AggregateObject");
@@ -276,16 +279,19 @@
     XCTAssertEqualWithAccuracy([noArray averageOfProperty:@"intCol"].doubleValue, 1.0, 0.1f);
     XCTAssertEqualWithAccuracy([yesArray averageOfProperty:@"intCol"].doubleValue, 0.0, 0.1f);
     XCTAssertEqualWithAccuracy([allArray averageOfProperty:@"intCol"].doubleValue, 0.4, 0.1f);
+    XCTAssertEqualWithAccuracy([[allArray valueForKeyPath:@"@avg.intCol"] doubleValue], 0.4, 0.1f);
 
     // Test float average
     XCTAssertEqualWithAccuracy([noArray averageOfProperty:@"floatCol"].doubleValue, 0.0, 0.1f);
     XCTAssertEqualWithAccuracy([yesArray averageOfProperty:@"floatCol"].doubleValue, 1.2, 0.1f);
     XCTAssertEqualWithAccuracy([allArray averageOfProperty:@"floatCol"].doubleValue, 0.72, 0.1f);
+    XCTAssertEqualWithAccuracy([[allArray valueForKeyPath:@"@avg.floatCol"] doubleValue], 0.72, 0.1f);
 
     // Test double average
     XCTAssertEqualWithAccuracy([noArray averageOfProperty:@"doubleCol"].doubleValue, 2.5, 0.1f);
     XCTAssertEqualWithAccuracy([yesArray averageOfProperty:@"doubleCol"].doubleValue, 0.0, 0.1f);
     XCTAssertEqualWithAccuracy([allArray averageOfProperty:@"doubleCol"].doubleValue, 1.0, 0.1f);
+    XCTAssertEqualWithAccuracy([[allArray valueForKeyPath:@"@avg.doubleCol"] doubleValue], 1.0, 0.1f);
 
     // Test invalid column name
     RLMAssertThrowsWithReasonMatching([yesArray averageOfProperty:@"foo"], @"foo.*AggregateObject");
